@@ -5,6 +5,7 @@ require('dotenv').config()
 const mongoose = require("mongoose");
 const e = require("express");
 const clientRoutes = require('./routes/clientRoutes')
+const sellerRoutes = require('./routes/sellerRoutes')
 
 
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 // routes
 app.use('/', productRoutes)
 app.use('/', clientRoutes)
+app.use('/', sellerRoutes)
 
 mongoose.connect(process.env.MONGO_DB_URL, { useNewUrlParser: true }).then(() => console.log('connected To db'), app.listen(3000, () => console.log("started server")))
 

@@ -46,7 +46,7 @@ function logInController(req, res) {
 
 }
 
-function registerController(req, res) {
+async function registerController(req, res) {
 
     let name = req.body.name;
     let email = req.body.email;
@@ -88,21 +88,28 @@ function registerController(req, res) {
             message: "password is too short minimum length is 6 characters "
         })
     }
-
     else {
-        let hashedPassword = bcrypt.hashSync(password, 12)
-        let client = new ClientModel({
 
-            userName: name,
-            userEmail: email,
-            gender: gender,
-            password: hashedPassword
-        })
-
-        client.save().then(result => res.status(201).json({
-            message: "sucssess",
-            body: result
-        }))
+       let isEmailExisted = await  ClientModel.findOne({userEmail:email})
+        if(isEmailExisted){
+            res.status(400).json({message:"there is account with this email"})
+        }
+        else{
+            let hashedPassword = bcrypt.hashSync(password, 12)
+            let client = new ClientModel({
+    
+                userName: name,
+                userEmail: email,
+                gender: gender,
+                password: hashedPassword
+            })
+    
+            client.save().then(result => res.status(201).json({
+                message: "sucssess",
+                body: result
+            }))
+        }
+        
     }
 
 }
@@ -121,8 +128,6 @@ function profileController(req, res) {
 
     }))
 }
-
-
 
 function editProfileController(req, res) {
 
@@ -145,6 +150,7 @@ function editProfileController(req, res) {
 }
 
 function cartDetailsControllers(req, res) {
+
     const id = req.params.id
     ClientModel.findById(id).then(result =>
 
