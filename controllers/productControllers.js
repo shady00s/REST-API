@@ -27,7 +27,7 @@ function getProducts(req, res) {
 
     }
     else if (sortingType === "topRated") {
-        
+
         ProductModel.find().countDocuments()
             .then(count => {
                 totalItems = count
@@ -105,7 +105,7 @@ function getProductByCat(req, res) {
         ProductModel.find().countDocuments()
             .then(count => {
                 totalItems = count
-                return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory})
+                return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory })
             })
             .then(results => res.status(200).json({
                 message: "sucssess",
@@ -123,7 +123,7 @@ function getProductByCat(req, res) {
 }
 
 function addproduct(req, res) {
-    
+
     if (req.body.name.length < 3) {
         res.status(404).json({ message: "name is too short ,must be longer than 3 letters" })
     }
@@ -150,48 +150,58 @@ function addproduct(req, res) {
 
 function getSingleProduct(req, res) {
     let id = req.params.id
-    ProductModel.findOne({_id:id}).then(result => res.status(201).json({
-        message:"succssess",
+    ProductModel.findOne({ _id: id }).then(result => res.status(201).json({
+        message: "succssess",
         body: result
-    })).catch(e=> res.status(400).json({ message:"cannot find this product"})) ;
- 
+    })).catch(e => res.status(400).json({ message: "cannot find this product" }));
+
 }
 
 
 function editProduct(req, res) {
     let id = req.params.id
-    let filterBy = {_id:id};
-    let editedVal = { 
-            name: req.body.name,
-            imagePath: req.body.imagePath,
-            discreption: req.body.discreption,
-            quantity: req.body.quantity,
-            category: req.body.category,
-            price: req.body.price
+    let filterBy = { _id: id };
+    let editedVal = {
+        name: req.body.name,
+        imagePath: req.body.imagePath,
+        discreption: req.body.discreption,
+        quantity: req.body.quantity,
+        category: req.body.category,
+        price: req.body.price
 
-     }
-    ProductModel.findByIdAndUpdate(filterBy,editedVal,{new : true}).then(result => res.status(200).json({
-        message:"succssess",
+    }
+    ProductModel.findByIdAndUpdate(filterBy, editedVal, { new: true }).then(result => res.status(200).json({
+        message: "succssess",
         body: result
-    })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;
+    })).catch(e => res.status(200).json({ message: "cannot find this product" }));
 }
 
 
 function deleteProduct(req, res) {
     let id = req.params.id
-    ProductModel.deleteOne({_id:id}).then(result => res.status(200).json({
-        message:"succssess",
+    ProductModel.deleteOne({ _id: id }).then(result => res.status(200).json({
+        message: "succssess",
         body: "deleted"
-    })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;
+    })).catch(e => res.status(200).json({ message: "cannot find this product" }));
 }
 
-function searchProducts(req,res) {
+function searchProducts(req, res) {
     let name = req.params.productName
-    ProductModel.findOne({name:new RegExp('^'+name+'$', "i")}).then(result => res.status(200).json({
-        message:"succssess",
-        body: result
-    })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;
- 
+    ProductModel.findOne({ name: { $regex: name, $options: "1" } }).then(result => {
+        if (result) {
+            res.status(200).json({
+                message: "succssess",
+                body: result
+            })
+        }
+           
+        else{
+            res.status(404).json({ message: "cannot find this product" })
+        }
+    }
+
+    ).catch(e => res.status(404).json({ message:e}));
+
 }
 
-module.exports = { getProducts, getProductByCat, addproduct, getSingleProduct, editProduct ,deleteProduct,searchProducts}
+module.exports = { getProducts, getProductByCat, addproduct, getSingleProduct, editProduct, deleteProduct, searchProducts }
