@@ -83,7 +83,7 @@ function getProducts(req, res) {
     }
     else {
 
-        res.status(404).json(
+        res.status(400).json(
             {
                 message: "sorting type is not found"
             }
@@ -95,14 +95,59 @@ function getProducts(req, res) {
 
 
 function getProductByCat(req, res) {
-    let enteredCategory = req.params.category
+
+    let enteredCategory = req.params.category || "default"
     let page = req.query.page || 1;
     let limitPerPage = 10;
+    let sortType = req.query.sortType
     let totalItems
 
 
-    if (req.params.category != "") {
-        ProductModel.find().countDocuments()
+    if (req.params.category != "default") {
+
+        if(sortType === "topRated"){
+            ProductModel.find().countDocuments()
+            .then(count => {
+                totalItems = count
+                return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory }).sort({ rating: 1 })
+            })
+            .then(results => res.status(200).json({
+                message: "sucssess",
+                page: page,
+                totalItems: totalItems,
+                "body": results
+            }))
+        }
+        else  if(sortType === "highestPrice"){
+            ProductModel.find().countDocuments()
+            .then(count => {
+                totalItems = count
+                return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory }).sort({ price: -1 })
+            })
+            .then(results => res.status(200).json({
+                message: "sucssess",
+                page: page,
+                totalItems: totalItems,
+                "body": results
+            }))
+        }
+
+        else  if(sortType === "lowestPrice"){
+            ProductModel.find().countDocuments()
+            .then(count => {
+                totalItems = count
+                return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory }).sort({ price: 1 })
+            })
+            .then(results => res.status(200).json({
+                message: "sucssess",
+                page: page,
+                totalItems: totalItems,
+                "body": results
+            }))
+        }
+      
+        else {
+            ProductModel.find().countDocuments()
             .then(count => {
                 totalItems = count
                 return ProductModel.find().skip((page - 1) * limitPerPage).limit(limitPerPage).find({ category: enteredCategory })
@@ -113,11 +158,12 @@ function getProductByCat(req, res) {
                 totalItems: totalItems,
                 "body": results
             }))
+        }
     }
 
 
     else {
-        res.status(404).json({ message: "no categories found" })
+        res.status(400).json({ message: "no categories found" })
 
     }
 }
@@ -125,7 +171,7 @@ function getProductByCat(req, res) {
 function addproduct(req, res) {
 
     if (req.body.name.length < 3) {
-        res.status(404).json({ message: "name is too short ,must be longer than 3 letters" })
+        res.status(400).json({ message: "name is too short ,must be longer than 3 letters" })
     }
 
     else if (req.body.name != '' && req.body.imagePath != '') {
@@ -143,7 +189,7 @@ function addproduct(req, res) {
     }
     else {
 
-        res.status(404).json({ message: "incomplete data" })
+        res.status(400).json({ message: "incomplete data" })
     }
 
 }
@@ -196,11 +242,11 @@ function searchProducts(req, res) {
         }
            
         else{
-            res.status(404).json({ message: "cannot find this product" })
+            res.status(400).json({ message: "cannot find this product" })
         }
     }
 
-    ).catch(e => res.status(404).json({ message:e}));
+    ).catch(e => res.status(400).json({ message:e}));
 
 }
 

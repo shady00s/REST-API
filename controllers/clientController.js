@@ -1,17 +1,17 @@
 const bcrypt = require('bcryptjs')
 const ClientModel = require('../models/clientModel')
-
+const jwt = require('jsonwebtoken')
 function logInController(req, res) {
     let email = req.body.email
     let password = req.body.password
 
     if (email.length === 0) {
-        res.status(404).json({
+        res.status(400).json({
             message: "email is empty "
         })
     }
     else if (password.length === 0) {
-        res.status(404).json({
+        res.status(400).json({
             message: "password is empty "
         })
     }
@@ -107,7 +107,7 @@ function profileController(req, res) {
             body: result
         })
 
-    }).catch(e => res.status(404).json({
+    }).catch(e => res.status(400).json({
         message: "user not found",
 
     }))
@@ -129,7 +129,7 @@ function editProfileController(req, res) {
             body: result
         })
 
-    }).catch(e => res.status(404).json({
+    }).catch(e => res.status(400).json({
         message: "user not found",
 
     }))
@@ -143,7 +143,7 @@ function cartDetailsControllers(req, res) {
             message: "sucssess",
             body: result.cart
         })
-    ).catch(e => res.status(404).json({
+    ).catch(e => res.status(400).json({
         message: "user not found",
 
     }))
