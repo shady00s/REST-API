@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const ClientModel = require('../models/clientModel')
 const jwt = require('jsonwebtoken')
+
 function logInController(req, res) {
     let email = req.body.email
     let password = req.body.password
@@ -16,10 +17,18 @@ function logInController(req, res) {
         })
     }
     else {
+
+        
         ClientModel.findOne({ email: email }).then((result) => {
+
+
             let hashedPassword = bcrypt.compareSync(password, result.password)
             if (hashedPassword) {
-                res.status(200).json({
+
+
+                const token = jwt.sign({_id:result.id},process.env.TOKEN_SECRET)
+
+                res.header('user-token',token).status(200).json({
                     message: "succsess",
                     body: result
                 })
