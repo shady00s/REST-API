@@ -150,10 +150,10 @@ function addproduct(req, res) {
 
 function getSingleProduct(req, res) {
     let id = req.params.id
-    ProductModel.findOne({_id:id}).then(result => res.status(200).json({
+    ProductModel.findOne({_id:id}).then(result => res.status(201).json({
         message:"succssess",
         body: result
-    })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;
+    })).catch(e=> res.status(400).json({ message:"cannot find this product"})) ;
  
 }
 
@@ -170,7 +170,7 @@ function editProduct(req, res) {
             price: req.body.price
 
      }
-    ProductModel.findOneAndUpdate(filterBy,editedVal,{new : true}).then(result => res.status(200).json({
+    ProductModel.findByIdAndUpdate(filterBy,editedVal,{new : true}).then(result => res.status(200).json({
         message:"succssess",
         body: result
     })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;
@@ -187,7 +187,7 @@ function deleteProduct(req, res) {
 
 function searchProducts(req,res) {
     let name = req.params.productName
-    ProductModel.findOne({name:name}).then(result => res.status(200).json({
+    ProductModel.findOne({name:new RegExp('^'+name+'$', "i")}).then(result => res.status(200).json({
         message:"succssess",
         body: result
     })).catch(e=> res.status(200).json({ message:"cannot find this product"})) ;

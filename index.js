@@ -4,12 +4,12 @@ const app = express()
 require('dotenv').config()
 const mongoose = require("mongoose");
 const e = require("express");
-const bodyParser = require("body-parser");
+const clientRoutes = require('./routes/clientRoutes')
 
 
 
 app.use(express.json())
-app.use('/', productRoutes)
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader(
@@ -19,6 +19,9 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
+// routes
+app.use('/', productRoutes)
+app.use('/', clientRoutes)
 
 mongoose.connect(process.env.MONGO_DB_URL, { useNewUrlParser: true }).then(() => console.log('connected To db'), app.listen(3000, () => console.log("started server")))
 
