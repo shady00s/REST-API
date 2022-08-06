@@ -18,7 +18,7 @@ function logInController(req, res) {
     }
     else {
 
-        
+
         ClientModel.findOne({ email: email }).then((result) => {
 
 
@@ -26,9 +26,9 @@ function logInController(req, res) {
             if (hashedPassword) {
 
 
-                const token = jwt.sign({_id:result.id},process.env.TOKEN_SECRET)
+                const token = jwt.sign({ _id: result.id }, process.env.TOKEN_SECRET)
 
-                res.header('user-token',token).status(200).json({
+                res.header('user-token', token).status(200).json({
                     message: "succsess",
                     body: result
                 })
@@ -90,26 +90,26 @@ async function registerController(req, res) {
     }
     else {
 
-       let isEmailExisted = await  ClientModel.findOne({userEmail:email})
-        if(isEmailExisted){
-            res.status(400).json({message:"there is account with this email"})
+        let isEmailExisted = await ClientModel.findOne({ userEmail: email })
+        if (isEmailExisted) {
+            res.status(400).json({ message: "there is account with this email" })
         }
-        else{
+        else {
             let hashedPassword = bcrypt.hashSync(password, 12)
             let client = new ClientModel({
-    
+
                 userName: name,
                 userEmail: email,
                 gender: gender,
                 password: hashedPassword
             })
-    
+
             client.save().then(result => res.status(201).json({
                 message: "sucssess",
                 body: result
             }))
         }
-        
+
     }
 
 }
@@ -164,26 +164,33 @@ function cartDetailsControllers(req, res) {
     }))
 }
 
-function addToCartController(req,res){
-    let cartList=[]
-    let cartUpdatedVal = { 
-        cart:[
-            ...cartList,
-            req.body.cart
-        ]
-     }
+function addToCartController(req, res) {
+    let cartList = []
+
     const id = req.params.id
+
     ClientModel.findById(id).
-    then(result => cartList = result.cart).then(()=>
-    
-    ClientModel.findByIdAndUpdate(id, cartUpdatedVal, { new: true }).then(result => {
-        res.status(200).json({
-            message: "sucssess",
-            body: result
-        })})
-    )
-    
+        then(result => cartList = result.cart).then(() => {
+            let cartUpdatedVal = {
+                cart: [
+                    ...cartList,
+                    req.body.cart
+                ]
+            }
+
+            ClientModel.findByIdAndUpdate(id, cartUpdatedVal, { new: true }).then(result => {
+                res.status(200).json({
+                    message: "sucssess",
+                    body: result
+                })
+            })
+
+        }
+
+
+        )
+
 }
 
 
-module.exports = { registerController, logInController, profileController, editProfileController,cartDetailsControllers,addToCartController }
+module.exports = { registerController, logInController, profileController, editProfileController, cartDetailsControllers, addToCartController }

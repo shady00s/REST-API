@@ -28,3 +28,4 @@ app.use('/', sellerRoutes)
 mongoose.connect(process.env.MONGO_DB_URL, { useNewUrlParser: true }).then(() => console.log('connected To db'), app.listen(3000, () => console.log("started server")))
 
 
+
